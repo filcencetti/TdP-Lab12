@@ -10,6 +10,7 @@ class Model:
         self._idMap = {}
         for retailer in self.retailers:
             self._idMap[retailer.Retailer_code] = retailer
+        self._N = None
 
     def fillDD(self):
         countries = set()
@@ -37,26 +38,31 @@ class Model:
 
         return sorted_dict
 
-    def getMaxWieght(self,N):
+    def getMaxWeight(self,N):
+        self._N = N
         self.sol_ottima = -1
         self.path_ottimo = []
         for node in self._graph.nodes():
-            path = [node]
-            self.recursive(node,path,N)
+            path = []
+            sum = 0
+            self.recursive(node,path,sum)
 
-    def recursive(self,node,path,N):
-        if len(path) == N:
-            if path[0] == path[-1]:
-                return path
-            return 0
+    def recursive(self,node,path,sum):
+        if len(path) == self._N:   # ES: N=4, ho 4 archi quando in path ci sono 5 nodi ==> len(path) == 4
+            for ar in self._graph.edges(node, data=True):
+                if path[0] == ar[1]:
+                    sum += ar[2]["weight"]
+                    path.append(ar[1])
+                    if sum > self.sol_ottima:
+                        self.sol_ottima = sum
+                        self.path_ottimo = path
+                        print(f"la soluzione ottima ha peso {self.sol_ottima}")
+                return
 
         else:
-            for nd in self._graph.neighbors(node):
-                if nd not in path:
-                    path.append(nd)
-                    self.recursive(nd,path,N)
-
-
-
-
-
+            for ar in self._graph.edges(node, data=True):
+                if ar[1] not in path:
+                    sum += ar[2]["weight"]
+                    path.append(ar[1])
+                    self.recursive(ar[1],path,sum)
+                    path.pop()

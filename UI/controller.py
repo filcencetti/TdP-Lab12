@@ -54,4 +54,4 @@ class Controller:
         if int(self._view.txtN.value) <= 2:
             self._view.create_alert(f"Inserire un valore maggiore di 2!!!")
             return
-        self._model.getMaxWieght(int(self._view.txtN.value))
+        self._model.getMaxWeight(int(self._view.txtN.value))
