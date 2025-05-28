@@ -48,11 +48,11 @@ class Model:
             self.recursive(node,path,sum)
 
     def recursive(self,node,path,sum):
-        if len(path) == self._N:   # ES: N=4, ho 4 archi quando in path ci sono 5 nodi ==> len(path) == 4
-            for ar in self._graph.edges(node, data=True):
-                if path[0] == ar[1]:
-                    sum += ar[2]["weight"]
-                    path.append(ar[1])
+        if len(path) == self._N:   # ES: N=5, devo trovare 5 archi e 6 nodi in path ==> len(path) == 5
+            for edge in self._graph.edges(node, data=True):
+                if path[0] == edge[1]:
+                    sum += edge[2]["weight"]
+                    path.append(edge[1])
                     if sum > self.sol_ottima:
                         self.sol_ottima = sum
                         self.path_ottimo = path
@@ -60,9 +60,9 @@ class Model:
                 return
 
         else:
-            for ar in self._graph.edges(node, data=True):
-                if ar[1] not in path:
-                    sum += ar[2]["weight"]
-                    path.append(ar[1])
-                    self.recursive(ar[1],path,sum)
+            for edge in self._graph.edges(node, data=True):
+                if edge[1] not in path:
+                    sum += edge[2]["weight"]
+                    path.append(edge[1])
+                    self.recursive(edge[1],path,sum)
                     path.pop()
