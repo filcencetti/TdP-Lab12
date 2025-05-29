@@ -1,3 +1,7 @@
+import copy
+from datetime import datetime
+from dis import RETURN_CONST
+
 import networkx as nx
 
 from database.DAO import DAO
@@ -43,26 +47,33 @@ class Model:
         self.sol_ottima = -1
         self.path_ottimo = []
         for node in self._graph.nodes():
+            nodes = []
+            nodes.append(node)
             path = []
             sum = 0
-            self.recursive(node,path,sum)
+            self.recursive(nodes,path,sum)
+        print(f"Peso cammino massimo: {self.sol_ottima}")
+        for arc in self.path_ottimo:
+            print(f"{arc[0]} --> {arc[1]}: {arc[2]["weight"]}")
 
-    def recursive(self,node,path,sum):
-        if len(path) == self._N:   # ES: N=5, devo trovare 5 archi e 6 nodi in path ==> len(path) == 5
-            for edge in self._graph.edges(node, data=True):
-                if path[0] == edge[1]:
+    def recursive(self,nodes,path,sum):
+        if len(path) == self._N-1:   # ES: N=5, devo trovare 5 archi e 6 nodi in path (nodo in = nodo fin) ==> len(path) == 4
+            for edge in self._graph.edges(nodes[-1], data=True):
+                if path[0][0] == edge[1]: # c'è un solo arco che connette due nodi
                     sum += edge[2]["weight"]
-                    path.append(edge[1])
+                    path.append(edge)
                     if sum > self.sol_ottima:
                         self.sol_ottima = sum
-                        self.path_ottimo = path
-                        print(f"la soluzione ottima ha peso {self.sol_ottima}")
+                        self.path_ottimo = copy.deepcopy(path)
                 return
 
         else:
-            for edge in self._graph.edges(node, data=True):
-                if edge[1] not in path:
+            for edge in self._graph.edges(nodes[-1], data=True):
+                if edge[1] not in nodes:
                     sum += edge[2]["weight"]
-                    path.append(edge[1])
-                    self.recursive(edge[1],path,sum)
+                    nodes.append(edge[1])
+                    path.append(edge)
+                    self.recursive(nodes,path,sum)
                     path.pop()
+                    sum -= edge[2]["weight"]
+                    nodes.pop()
