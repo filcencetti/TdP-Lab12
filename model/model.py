@@ -1,11 +1,7 @@
 import copy
 from datetime import datetime
-from dis import RETURN_CONST
-
 import networkx as nx
-
 from database.DAO import DAO
-
 
 class Model:
     def __init__(self):
@@ -39,7 +35,6 @@ class Model:
             volumi[node] = somma
 
         sorted_dict = dict(sorted(volumi.items(), key=lambda item: item[1], reverse=True))
-
         return sorted_dict
 
     def getMaxWeight(self,N):
@@ -47,14 +42,9 @@ class Model:
         self.sol_ottima = -1
         self.path_ottimo = []
         for node in self._graph.nodes():
-            nodes = []
-            nodes.append(node)
-            path = []
-            sum = 0
-            self.recursive(nodes,path,sum)
-        print(f"Peso cammino massimo: {self.sol_ottima}")
-        for arc in self.path_ottimo:
-            print(f"{arc[0]} --> {arc[1]}: {arc[2]["weight"]}")
+            self.start = datetime.now()
+            self.recursive([node],[],0)
+        return
 
     def recursive(self,nodes,path,sum):
         if len(path) == self._N-1:   # ES: N=5, devo trovare 5 archi e 6 nodi in path (nodo in = nodo fin) ==> len(path) == 4
@@ -65,10 +55,12 @@ class Model:
                     if sum > self.sol_ottima:
                         self.sol_ottima = sum
                         self.path_ottimo = copy.deepcopy(path)
-                return
+                        end = datetime.now()
+                        print(f"SI, tempo: {end-self.start}")
+                    break
+            return
 
-        else:
-            for edge in self._graph.edges(nodes[-1], data=True):
+        for edge in self._graph.edges(nodes[-1], data=True):
                 if edge[1] not in nodes:
                     sum += edge[2]["weight"]
                     nodes.append(edge[1])

@@ -55,3 +55,7 @@ class Controller:
             self._view.create_alert(f"Inserire un valore maggiore di 2!!!")
             return
         self._model.getMaxWeight(int(self._view.txtN.value))
+        self._view.txt_result.controls.append(ft.Text((f"Peso cammino massimo: {self._model.sol_ottima}")))
+        for arc in self._model.path_ottimo:
+            self._view.txt_result.controls.append(ft.Text(f"{arc[0]} --> {arc[1]}: {arc[2]["weight"]}"))
+        self._view.update_page()
