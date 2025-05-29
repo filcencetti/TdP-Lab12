@@ -14,10 +14,11 @@ class Controller:
     def fillDD(self):
         for i in [2015,2016,2017,2018]:
             self._view.ddyear.options.append(ft.dropdown.Option(i))
+        countries = self._model.fillDD()
+        DDoptions = list(map(lambda x: ft.dropdown.Option(x), countries)) # alternativa migliore al ciclo for
+        self._view.ddcountry.options = DDoptions
+        self._view.update_page()
 
-        for country in self._model.fillDD():
-            self._view.ddcountry.options.append(
-                ft.dropdown.Option(country))
 
     def read_retailer(self,e):
         self._country = e.control.data
