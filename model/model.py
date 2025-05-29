@@ -42,22 +42,15 @@ class Model:
         self.sol_ottima = -1
         self.path_ottimo = []
         for node in self._graph.nodes():
-            self.start = datetime.now()
             self.recursive([node],[],0)
         return
 
     def recursive(self,nodes,path,sum):
-        if len(path) == self._N-1:   # ES: N=5, devo trovare 5 archi e 6 nodi in path (nodo in = nodo fin) ==> len(path) == 4
-            for edge in self._graph.edges(nodes[-1], data=True):
-                if path[0][0] == edge[1]: # c'è un solo arco che connette due nodi
-                    sum += edge[2]["weight"]
-                    path.append(edge)
-                    if sum > self.sol_ottima:
-                        self.sol_ottima = sum
-                        self.path_ottimo = copy.deepcopy(path)
-                        end = datetime.now()
-                        print(f"SI, tempo: {end-self.start}")
-                    break
+        if len(path) == self._N:   # ES: N=5, devo trovare 5 archi e 6 nodi in path (nodo in = nodo fin) ==> len(path) == 4
+            if path[0][0] == path[-1][1]: # c'è un solo arco che connette due nodi
+                if sum > self.sol_ottima:
+                    self.sol_ottima = sum
+                    self.path_ottimo = copy.deepcopy(path)
             return
 
         for edge in self._graph.edges(nodes[-1], data=True):
